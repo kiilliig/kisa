@@ -109,13 +109,10 @@
 			<!-- Page content start -->
 			<main>
 				<div class="container">
-					<div class="form-divider">
-                        <input type="text" id="inputText">
-                        <button type="button" id="sendBtn">send data</button>
-                        <input type="text" id="inputText2">
-                        <button type="button" id="sendBtn2">send data</button>
-
+					<div id="balanceText">
+                        <h1 id="balanceAmount"></h1>
                     </div>
+					<div id="transactionList"></div>
 				</div>
 
 				<div class="form-divider"></div>
@@ -146,35 +143,61 @@
 		  	<div class="circle3"></div>
 		</div>
 	</div>
-
 	<!-- JQuery library file. requared all pages -->
 	<script src="js/jquery-3.2.1.min.js"></script>
-
 	<!-- Template global script file. requared all pages -->
-    <script src="js/global.script.js"></script>
+	<script src="js/global.script.js"></script>
+	<script>
+	function getQueryStringObject() { // query string을 object로 바꿔줌
+    var a = window.location.search.substr(1).split('&');
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i) {
+        var p = a[i].split('=', 2);
+        if (p.length == 1)
+            b[p[0]] = "";
+        else
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+	}
+	var qs = getQueryStringObject();
+    var jwtToken = sessionStorage.getItem('jwtToken');
+    console.log(qs, jwtToken)
+	$.ajax({
+        url:'http://localhost:3000/balance',
+        type : 'POST',
+        headers : {
+            'ourtoken' : jwtToken
+        },
+        data : {
+            fin_use_num : qs.fin_use_num
+        },
+        success:function(data){
+            console.log("해당 계좌의 잔액은 :", data.balance_amt)
+            $("#balanceAmount").text(data.balance_amt)
+        }
+	})
+	$.ajax({
+        url:'http://localhost:3000/transactionlist',
+        type : 'POST',
+        headers : {
+            'ourtoken' : jwtToken
+        },
+        data : {
+            fin_use_num : qs.fin_use_num
+        },
+        success:function(data){
+            console.log(data)
+            for(var i = 0; i < data.res_list.length; i++){
+                var element = data.res_list[i]
+                $("#transactionList").append(element.print_content+" | "+ element.tran_amt+  "<br>");
+            }
 
-		// 추가한 부분
-		<script>
-        var data = $("#inputText").val();
-        $("#sendBtn").click(function(){
-            console.log($("#inputText").val())
-            $.ajax({  //에이작스 비동기 기술로 실시간으로 로그변화 감지할 수 있음
-                url: '/getData',  // request 보내는 부분
-                type : 'POST',
-                data : {
-                    inputData : $("#inputText").val(),
-										dataMemberId : 'skymill2000'
-										
-                },
-                success:function(data){
-									console.log(data); // reponse 받는 부분
-                }
-            })
-        })
-        $("#sendBtn2").click(function(){
-            alert($("#inputText2").val());
-            console.log($("#inputText2").val())
-        })
-    </script>
+        }
+	})	</script>
+
 </body>
+
+
 </html>

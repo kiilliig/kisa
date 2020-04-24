@@ -18,6 +18,10 @@ app.get('/htmltest', function(req, res){
 app.post('/getData', function(req,res){  // router 추가
   var data = req.body.inputData;  // data 받아주는 부분
   console.log(data);
+  console.log(req.body); // request로그를 보여줌
+  res.json(1);  // 데이터를 1번으로 보내기로함
 })
+
+
 
 app.listen(3000)

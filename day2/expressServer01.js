@@ -10,6 +10,9 @@
 // ├── about.html
 // └── index.html
 
+
+// expres framework 실습예제
+
 const express = require('express')
 const app = express()
 const port = 3000
@@ -29,3 +32,5 @@ app.get('/mypagee', function (req, res){
 })
 
 app.listen(3000)
+
+// http://expressjs.com/ 참고
